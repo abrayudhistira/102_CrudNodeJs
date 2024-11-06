@@ -36,7 +36,7 @@ router.put('/:id', (req, res) => {
     if (!todo) {
         return res.status(404).json({ message: 'Tugas tidak ditemukan' });
     }
-    todo.task = req.body.task || todo.task; // Update the task if provided
+    todo.task = req.body.task || todo.task;
 
     res.status(200).json({
         message: `Tugas dengan ID ${todo.id} telah diperbarui`,
