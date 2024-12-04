@@ -29,6 +29,12 @@ app.use(session({
 // View Engine Configuration
 app.set('view engine', 'ejs');
 app.set('layout', 'layouts/main-layout');
+
+// Middleware untuk menambahkan `user` ke semua tampilan
+app.use((req, res, next) => {
+    res.locals.user = req.session.userId ? { id: req.session.userId } : null;  // Periksa session
+    next();
+});
 // Static FIles
 app.use(express.static('public'));
 // Layout Middleware
@@ -36,6 +42,7 @@ app.use(expressLayouts);
 // Authentication and Routes
 app.use('/',authRoutes);
 app.use('/todos', todoRoutes);
+
 // Routes with Middleware
 app.get('/', isAuthenticated, (req, res) => {
     res.render('index');
@@ -51,6 +58,17 @@ app.get('/todo-view', isAuthenticated, (req, res) => {
         res.render('todo', { todos: todos });
     });
 });
+
+// Rute untuk logout
+app.get('/logout', (req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
+            return res.status(500).send('Failed to log out');
+        }
+        res.redirect('/login');
+    });
+});
+
 
 app.use((req, res) => {
     res.status(404).send('404 - Page Not Found');
